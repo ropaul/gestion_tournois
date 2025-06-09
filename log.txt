@@ -1,0 +1,10 @@
+2025-06-09 21:56:40,476 - INFO -  pour le tournoi samedi 13h30 - Leaders (duel - 8 places), avec l'état attente mail envoyé à encoreunautremail@gmail.com, test4@test.com 
+2025-06-09 22:11:43,988 - ERROR - Une erreur est survenue : name 'logging' is not defined
+Traceback (most recent call last):
+  File "C:\Projects\2025062SendMailTournoi\SendMailTournoi\main.py", line 27, in <module>
+    list_tournoi, formulaire_enrichi = gestion_formulaire_inscription.get_participant(configuration_tournoi,
+  File "C:\Projects\2025062SendMailTournoi\SendMailTournoi\gestion_formulaire_inscription.py", line 83, in get_participant
+    logging.info("creation di fichier out.csv avec résumé de ce qui se passe")
+NameError: name 'logging' is not defined
+2025-06-09 22:12:11,907 - INFO - creation du fichier out.csv avec résumé de ce qui se passe
+2025-06-09 22:12:11,925 - INFO -  pour le tournoi samedi 13h30 - Leaders (duel - 8 places), avec l'état attente mail envoyé à encoreunautremail@gmail.com, test4@test.com 

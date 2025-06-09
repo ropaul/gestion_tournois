@@ -1,5 +1,6 @@
 import pandas as pd
 from functools import reduce
+import logging
 
 def read_parameter(name):
     parameter_tournoi = pd.read_csv(name)
@@ -37,26 +38,54 @@ def get_participant_with_files(nom_tounoi, parametre, formulaire):
     formulaire_tournoi = formulaire_tournoi.rename(columns={"name_column": name_column})
     return formulaire_tournoi
 
+def get_participant_with_files2(nom_tounoi, parametre, formulaire):
+
+    nb_participant= int(parametre[parametre["libelle"] == nom_tounoi]["nombre_participant"].iloc[0])
+    nb_attente = int(parametre[parametre["libelle"] == nom_tounoi]["nombre_attente"].iloc[0])
+    formulaire_tournoi = formulaire[formulaire["liste_tournois"].str.contains(nom_tounoi, case=False, na=False)]
+
+    etat_torunoi= ["participant"] * min(len(formulaire_tournoi), nb_participant) \
+                    + ["attente"] * min(len(formulaire_tournoi) - nb_participant, nb_attente)\
+                    + ["refuser"] * max(0, len(formulaire_tournoi) - nb_participant - nb_attente)
+    name_column = "etat"
+    formulaire_tournoi = formulaire_tournoi.assign(name_column = etat_torunoi)
+    formulaire_tournoi = formulaire_tournoi.rename(columns={"name_column": name_column})
+    return formulaire_tournoi
+
+
 def get_participant( name_parameter, name_formulaire):
     parameter_tounoi = read_parameter(name_parameter)
     formulaire = read_formulaire(name_formulaire)
-    list_column =  list(formulaire.columns.values)
 
+
+    formulaire = formulaire.rename(columns={"A quel tournoi souhaitez-vous vous inscrire?": "samedi","A quel tournoi souhaitez-vous vous inscrire?.1": "dimanche"})
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.max_rows', None)
+
+    formulaire['samedi'] = formulaire['samedi'].apply(lambda x: "samedi " + x)
+    formulaire['dimanche'] = formulaire['dimanche'].apply(lambda x: "dimanche " + x)
+
+
+    # Utiliser melt pour fusionner colonne1 et colonne2
+    formulaire = formulaire.melt(
+        id_vars=["Horodateur","Nom ou Pseudo","Adresse Mail","Numéro de téléphone"],  # Colonnes à conserver telles quelles
+        value_vars=['samedi', 'dimanche'],  # Colonnes à fusionner
+        value_name='liste_tournois',  # Nom de la nouvelle colonne fusionnée
+        var_name='origine')  # Optionnel : nom de la colonne indiquant l'origine
+
+    list_column = list(formulaire.columns.values)
     list_tournoi = parameter_tounoi["libelle"].to_list()
     tournois = []
     for l in list_tournoi :
-        tournois.append(get_participant_with_files(l, parameter_tounoi, formulaire))
+        tournois.append(get_participant_with_files2(l, parameter_tounoi, formulaire))
 
-    # print(participants)
-    # on merge tous les dataframes tournois ensemble. Mais on peut ptet faire autrement
-    df = reduce(lambda df1,df2: pd.merge(df1,df2,on=list_column, how="outer"), tournois)
-    # df = pd.merge( tournois,  on=['nom',"prénom","adresse mail"], how="outer")
+
+    df = reduce(lambda df1,df2: pd.concat([df1, df2], ignore_index=True), tournois)
+    logging.info("creation du fichier out.csv avec résumé de ce qui se passe")
     df.to_csv('out.csv', index=False)
+    print(df)
+
     return list_tournoi, df
-    # dfs = [df.set_index(['nom']) for df in tournois]
-    # print (pd.concat(dfs, axis=1))
-    # return dfs
-    # pd.DataFrame({"tournoi":list_tournoi, "participant":participants, "attente": attentes, "refusers": refusers})
 
 
 if __name__ == '__main__':
@@ -72,6 +101,6 @@ if __name__ == '__main__':
     # print(participant )
 
     # test final
-    list_tournoi, result = get_participant("configuration_tournoi", "Formulaire sans titre (réponses) - Réponses au formulaire 1.csv")
+    list_tournoi, result = get_participant("configuration_tournoi", "[test] Copie de Inscription Tournoi PEL 2025 pour des tests .csv")
 
     print(result)
