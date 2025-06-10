@@ -15,7 +15,7 @@ def send_mail(smtp_username: str, smtp_password: str,email_receiver: list[str], 
     # Création du message
     message = MIMEMultipart()
     message['From'] = smtp_username
-    message['To'] = email_receiver
+    message['Bcc'] = email_receiver
     message['Subject'] = objet
 
     # Corps du message
@@ -27,9 +27,11 @@ def send_mail(smtp_username: str, smtp_password: str,email_receiver: list[str], 
         server = smtplib.SMTP(smtp_server, smtp_port)
         server.starttls()
         server.login(smtp_username, smtp_password)
-        server.sendmail(message['From'], message['To'], message.as_string())
+        # envoie en copie caché.
+        server.sendmail(message['From'], message['Bcc'] , message.as_string())
         print('E-mail envoyé avec succès!')
     except Exception as e:
+        logging.error(f'Erreur lors de l\'envoi de l\'e-mail : {e}')
         print(f'Erreur lors de l\'envoi de l\'e-mail : {e}')
     finally:
         server.quit()
@@ -45,19 +47,16 @@ def send_mail_to_participant(list_tournoi, formulaire_enrichi, configuration, te
         print(tournoi)
         formulaire_restreint = formulaire_enrichi[formulaire_enrichi["liste_tournois"] == tournoi]
         for etat, corps in dict_etat_corps.items():
-            f = open(corps, 'r')
+            f = open(corps, 'r', encoding='utf-8')
             contenu = f.read()
             corps_enrichi = contenu.format(tournoi = tournoi, heure= df_configuration[df_configuration["libelle"] == tournoi]["heure"].to_string())
             column_etat = "etat"
             list_mail=formulaire_restreint[formulaire_restreint[column_etat] == etat]["Adresse Mail"].tolist()
             list_mail = ", ".join(list_mail)
-            print(etat)
-            print (list_mail)
             objet_mail = "[Paris est Ludique]" + tournoi + ": " + etat
 
             if etat != "participant"  and len(list_mail) != 0:
                 logging.info(" pour le tournoi {tournoi}, avec l'état {etat} mail envoyé à {list} ".format(tournoi = tournoi,etat = etat, list = list_mail))
-                print (objet_mail)
                 send_mail(smtp_username, smtp_password,list_mail,objet_mail, corps_enrichi)
             f.close()
 

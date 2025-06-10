@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pandas as pd
 from functools import reduce
 import logging
@@ -82,7 +84,7 @@ def get_participant( name_parameter, name_formulaire):
 
     df = reduce(lambda df1,df2: pd.concat([df1, df2], ignore_index=True), tournois)
     logging.info("creation du fichier out.csv avec résumé de ce qui se passe")
-    df.to_csv('out.csv', index=False)
+    df.to_csv('out' + str(datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + '.csv', index=False)
     print(df)
 
     return list_tournoi, df

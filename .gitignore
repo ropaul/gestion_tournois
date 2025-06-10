@@ -31,8 +31,13 @@ Thumbs.db
 ##########
 
 ./dist
-./build
+.build
 ./venv
+dist/*
+./build/*
+./venv/*
 credential_gmail
 Formulaire sans titre (réponses) - Réponses au formulaire 1.csv
-out.csv
+*PEL*
+Code
+out*
