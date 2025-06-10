@@ -44,3 +44,4 @@ out*
 .idea*
 ./idea/*
 .idea/
+log.txt
