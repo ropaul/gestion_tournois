@@ -41,3 +41,6 @@ Formulaire sans titre (réponses) - Réponses au formulaire 1.csv
 *PEL*
 Code
 out*
+.idea*
+./idea/*
+.idea/
