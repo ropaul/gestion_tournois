@@ -88,3 +88,5 @@ Traceback (most recent call last):
 OSError: [Errno 22] Invalid argument: 'out2025-06-10 08:00:17.522429.csv'
 2025-06-10 08:01:41,797 - INFO - creation du fichier out.csv avec résumé de ce qui se passe
 2025-06-10 08:01:41,812 - INFO -  pour le tournoi samedi 13h30 - Leaders (duel - 8 places), avec l'état attente mail envoyé à encoreunautremail@gmail.com, test4@test.com 
+2025-06-10 08:12:01,168 - INFO - creation du fichier out.csv avec résumé de ce qui se passe
+2025-06-10 08:12:01,176 - INFO -  pour le tournoi samedi 13h30 - Leaders (duel - 8 places), avec l'état attente mail envoyé à encoreunautremail@gmail.com, test4@test.com 
